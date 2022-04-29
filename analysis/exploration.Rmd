@@ -1,0 +1,65 @@
+---
+title: "Exploratory data analysis"
+author: "Guillem Hurault"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE,
+                      fig.height = 5,
+                      fig.width = 12,
+                      dpi = 200)
+```
+
+```{r initialisation}
+library(tidyverse)
+
+train <- targets::tar_read(training_data)
+```
+
+```{r exploration1}
+head(train)
+
+summary(train)
+
+pairs(train[, 1:10])
+```
+
+## Visualising missing values
+
+```{r exploration-missing}
+train %>%
+  select(-Y) %>%
+  is.na() %>%
+  as_tibble() %>%
+  mutate(Index = 1:n()) %>%
+  pivot_longer(-Index) %>%
+  ggplot(aes(x = name, y = Index, fill = value)) +
+  geom_tile() +
+  labs(x = "Variable", fill = "Missing") +
+  coord_cartesian(expand = FALSE) +
+  scale_fill_manual(values = c("#000000", "#E69F00")) +
+  theme_classic(base_size = 15)
+```
+
+## Multicollinearity
+
+For plotting, we impute missing values by 0 (mean of each feature).
+
+```{r exploration-correlation}
+train %>%
+  select(-Y, -Xb1, -Xb2) %>%
+  replace(is.na(.), 0) %>%
+  cor() %>%
+  corrplot::corrplot.mixed()
+```
+
+## Distribution of the outcome variable
+
+```{r exploration-outcome}
+table(train[["Y"]]) %>%
+  barplot(main = "Count of outcome variable")
+```
