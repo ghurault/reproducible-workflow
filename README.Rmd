@@ -114,7 +114,7 @@ In practice, more/better tests should be implemented.
 ## Current analysis status (cf. targets)
 
 ```{r tar_network, echo=FALSE, fig.fullwidth=TRUE}
-visNetwork::visSave(targets::tar_visnetwork(),
+visNetwork::visSave(targets::tar_visnetwork(targets_only = TRUE),
                     file = "docs/tar_network.html")
 webshot::webshot("docs/tar_network.html", vwidth = 800, vheight = 500)
 ```

@@ -2,7 +2,9 @@
 title: "Modelling"
 author: "Guillem Hurault"
 date: "`r format(Sys.time(), '%d %B %Y')`"
-output: html_document
+output:
+  html_document:
+    toc: true
 ---
 
 ```{r setup, include=FALSE}
@@ -19,19 +21,24 @@ We considered two models:
 - a Poisson regression with Elastic Net regularisation ("glmnet")
 - a gradient boosting machine ("gbm") with a Poisson distribution
 
+The targets pipeline has alread fitted the models, computed feature importance and generated predictions.
+In this report, we just inspect the results.
+
+
 ```{r initialisation}
 library(tidyverse)
 
 glmnet_fit <- targets::tar_read(glmnet_fit)
 gbm_fit <- targets::tar_read(gbm_fit)
-imp <- tar_read(feature_importance)
+imp <- targets::tar_read(feature_importance)
+perf <- targets::tar_read(performance)
 ```
 
 ## Check convergence
 
 First, we inspect whether the two models have converged.
 
-```{r}
+```{r check-fit}
 par(mfrow = c(1, 2))
 
 plot(glmnet_fit, main = "glmnet fit\n")
@@ -39,7 +46,6 @@ plot(glmnet_fit, main = "glmnet fit\n")
 # print(gbm_fit)
 gbm::gbm.perf(gbm_fit, method = "cv")
 title(main = "gbm fit")
-
 
 par(mfrow = c(1, 1))
 ```
@@ -49,8 +55,8 @@ par(mfrow = c(1, 1))
 We assess the predictive performance of the model by generating predictions for the test set and comparing the predictions to the true values using the RMSE and MAE (the lower the better).
 We also compute the performance of an intercept-only model to serve as a reference.
 
-```{r perf}
-tar_read(performance) %>%
+```{r predictive-performance}
+perf %>%
   pivot_longer(!Model, names_to = "Metric", values_to = "Value") %>%
   ggplot(aes(x = Model, y = Value)) +
   facet_grid(rows = vars(Metric)) +
@@ -73,7 +79,7 @@ We define the importance of features by:
 We assess the identification of importance features by computing the Spearman rank correlation coefficient between the importance of the features given by the model and the true importance of the features (absolute value of coefficients used to generate the data).
 The higher the correlation the better.
 
-```{r enet-coef}
+```{r feature-importance}
 tibble(Model = c("glmnet", "gbm"),
        Correlation = c(cor(imp$True, imp$glmnet, method = "spearman"),
                        cor(imp$True, imp$gbm, method = "spearman"))) %>%
