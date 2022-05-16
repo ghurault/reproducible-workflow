@@ -1,7 +1,7 @@
 Showcasing a reproducible workflow in R
 ================
 Guillem Hurault
-2022-04-29
+2022-05-16
 
 -   [File structure](#file-structure)
 -   [Reproducibility](#reproducibility)
@@ -104,10 +104,14 @@ To reproduce the analysis:
 1.  Clone this repository.
 2.  In the command line (e.g. Git Bash on Windows), navigate to the
     project directory.
-3.  Build the Docker image with
-    `docker build . -t rstudio/reproducible-workflow`.
+3.  Pull the Docker image from [Docker
+    Hub](https://hub.docker.com/r/ghurault/reproducible-workflow) with
+    `docker pull ghurault/reproducible-workflow` (alternatively, build
+    the Docker image with
+    `docker build . -t ghurault/reproducible-workflow`, although the
+    image may not be exactly the same as the one used for the analysis).
 4.  Run the container with
-    `MSYS_NO_PATHCONV=1 docker run -d --rm -p 8787:8787 -e DISABLE_AUTH=true -v $(pwd):/home/rstudio/reproducible-workflow -v /home/rstudio/reproducible-workflow/renv rstudio/reproducible-workflow`.
+    `MSYS_NO_PATHCONV=1 docker run -d --rm -p 8787:8787 -e DISABLE_AUTH=true -v $(pwd):/home/rstudio/reproducible-workflow -v /home/rstudio/reproducible-workflow/renv ghurault/reproducible-workflow`.
 5.  Go to [`http://localhost:8787/`](http://localhost:8787/).
 6.  Open the `reproducible-workflow` directory and the click on
     `reproducible-workflow.Rproj` to open the RStudio project.
@@ -128,8 +132,10 @@ files and the project library (ignored by git) is stored in
 (`install.packages("renv")`), the project library can be restored by
 calling `renv::restore()`.
 
-Instruction 3) builds the docker image of the current directory
-(cf. `.`) and name it `rstudio/reproducible-workflow` (cf. `-t` option).
+`docker build . -t ghurault/reproducible-workflow` builds the docker
+image of the current directory (cf. `.`) and name it
+`ghurault/reproducible-workflow`. This is the image that was pushed to
+Docker Hub.
 
 Instruction 4) runs the container as a daemon (detached mode, cf. `-d`
 option). In addition,
