@@ -28,5 +28,5 @@ WORKDIR /home/$USER/reproducible-workflow
 # Install R packages to local library using renv
 COPY [".Rprofile", "renv.lock", "./"]
 COPY renv/activate.R ./renv/
-RUN chown -R rstudio . \
- && sudo -u rstudio R -e 'renv::restore(confirm = FALSE)'
+RUN chown -R rstudio . && \
+    sudo -u rstudio R -e 'renv::restore(confirm = FALSE)'
