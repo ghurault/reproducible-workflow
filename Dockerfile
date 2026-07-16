@@ -3,7 +3,7 @@
 
 FROM rocker/rstudio:4.1.3
 
-LABEL maintainer="Guillem Hurault <guillem.hurault@hotmail.fr>"
+LABEL maintainer="Guillem Hurault <ghurault.dev@outlook.com>"
 
 # system libraries
 RUN apt update && \
